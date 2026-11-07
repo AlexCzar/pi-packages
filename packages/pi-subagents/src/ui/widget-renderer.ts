@@ -51,6 +51,8 @@ export interface WidgetAgent {
 	readonly contextPercent: number | null;
 	/** The model the agent runs, once known. */
 	readonly model?: ModelIdentity;
+	/** The thinking level the agent runs at, once known. */
+	readonly thinkingLevel?: string;
 }
 
 // ── Per-agent rendering ──────────────────────────────────────────────────────
@@ -132,9 +134,11 @@ function renderRunningTurns(budget: TurnBudget, theme: Theme): string {
 	return budget.phase === "warned" ? theme.fg("warning", turns) : turns;
 }
 
-/** ` [provider/id]` after the agent's name, or nothing while the model is unknown. */
+/** Model and effective thinking level, or nothing while the model is unknown. */
 function modelTag(agent: WidgetAgent, theme: Theme): string {
-	return agent.model ? ` ${theme.fg("dim", `[${formatModel(agent.model)}]`)}` : "";
+	if (!agent.model) return "";
+	const thinking = agent.thinkingLevel ? ` · thinking: ${agent.thinkingLevel}` : "";
+	return ` ${theme.fg("dim", `[${formatModel(agent.model)}${thinking}]`)}`;
 }
 
 // ── Full widget rendering ────────────────────────────────────────────────────
